@@ -1,0 +1,11 @@
+package com.example.demo;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+@SpringBootTest
+class MySpringAppApplicationTests {
+
+    @Test
+    void contextLoads() {
+        // This will simply test if the Spring context loads successfully
+    }
+}
