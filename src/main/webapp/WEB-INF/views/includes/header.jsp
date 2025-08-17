@@ -29,6 +29,9 @@
 
   <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
+  
+  <!-- Custom CSS File -->
+  <link href="assets/css/custom.css" rel="stylesheet">
 
   <!-- =======================================================
   * Template Name: Impact
@@ -68,7 +71,6 @@
           <!-- Uncomment the line below if you also wish to use an image logo -->
           <!-- <img src="assets/img/logo.png" alt=""> -->
           <h1 class="sitename">Data Center Management</h1>
-          <span>System</span>
         </a>
 
         <nav id="navmenu" class="navmenu">
@@ -80,7 +82,6 @@
             <li><a href="/register">Register</a></li>
             <li><a href="#contact">Contact</a></li>
             <li><a href="/admin-login">Admin</a></li>
-            <li><a href="/pay-fee">Pay</a></li>
           </ul>
           <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>

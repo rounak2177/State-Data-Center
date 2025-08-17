@@ -29,11 +29,6 @@
                 <!-- Dynamic VM specs will be inserted here -->
                 <div id="vmDetailsContainer"></div>
 
-                <div class="mb-3">
-                    <label class="form-label">User Email</label>
-                    <input type="email" name="userEmail" class="form-control" required />
-                </div>
-
                 <button type="submit" class="btn btn-primary">Submit Request</button>
             </form>
         </div>
@@ -96,6 +91,22 @@
                                     ${req.status}
                                 </span>
                             </td>
+                            <td>
+                                <!-- Total Fee and Payment Button -->
+                                <c:if test="${req.status == 'APPROVED'}">
+                                    <div>Total Fee: ₹${req.totalFee}</div>
+                                    <c:choose>
+                                        <c:when test="${req.feePaid == 'Paid'}">
+                                            <span class="badge bg-success">Paid</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <form action="/submit-fee/${req.id}" method="post" style="display: inline;">
+                                                <button type="submit" class="btn btn-primary btn-sm">Pay Now</button>
+                                            </form>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:if>
+                            </td>
                         </tr>
                     </c:forEach>
                 </tbody>
@@ -120,7 +131,7 @@ document.getElementById('vmCount').addEventListener('input', function () {
                 <div class="card-body">
                     <div class="mb-3">
                         <label>CPU (Cores)</label>
-                        <select name="vmList[${i}].cpu" class="form-control" required>
+                        <select name="cpu" class="form-control" required>
                             <option value="">-- Select CPU Cores --</option>
                             <option>2</option>
                             <option>4</option>
@@ -132,7 +143,7 @@ document.getElementById('vmCount').addEventListener('input', function () {
 
                     <div class="mb-3">
                         <label>RAM</label>
-                        <select name="vmList[${i}].ram" class="form-control" required>
+                        <select name="ram" class="form-control" required>
                             <option value="">-- Select RAM --</option>
                             <option>4GB</option>
                             <option>8GB</option>
@@ -143,7 +154,7 @@ document.getElementById('vmCount').addEventListener('input', function () {
 
                     <div class="mb-3">
                         <label>Disk</label>
-                        <select name="vmList[${i}].disk" class="form-control" required>
+                        <select name="disk" class="form-control" required>
                             <option value="">-- Select Disk Size --</option>
                             <option>128GB</option>
                             <option>256GB</option>
@@ -155,17 +166,17 @@ document.getElementById('vmCount').addEventListener('input', function () {
 
                     <div class="mb-3">
                         <label>Operating System</label>
-                        <input type="text" name="vmList[${i}].os" class="form-control" required />
+                        <input type="text" name="os" class="form-control" required />
                     </div>
 
                     <div class="mb-3">
                         <label>Database/Application</label>
-                        <input type="text" name="vmList[${i}].database" class="form-control" required />
+                        <input type="text" name="database" class="form-control" required />
                     </div>
 
                     <div class="mb-3">
                         <label>Type of VM</label>
-                        <select name="vmList[${i}].vmType" class="form-control" required>
+                        <select name="vmType" class="form-control" required>
                             <option value="">-- Select --</option>
                             <option value="Application">Application</option>
                             <option value="Data">Data</option>

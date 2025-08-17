@@ -34,7 +34,7 @@ public class HostingRequest {
     private String feePaid = "Unpaid";
 
     // Relation with VMDetail
-    @OneToMany(mappedBy = "hostingRequest", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "hostingRequest", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<VMDetail> vmList = new ArrayList<>();
 
     // Fee calculation logic

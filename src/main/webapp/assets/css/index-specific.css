@@ -1,0 +1,122 @@
+/* Hero Section */
+.hero h2 {
+    color: #000000 !important;
+    font-size: 48px !important;
+    font-weight: 800 !important;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.hero h2 .accent {
+    color: #000000 !important;
+}
+
+.hero p {
+    color: #000000 !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    line-height: 1.6 !important;
+}
+
+/* Footer Sections */
+.footer-about p {
+    color: #000000 !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    line-height: 1.6 !important;
+}
+
+.footer-links h4,
+.footer-contact h4 {
+    color: #000000 !important;
+    font-weight: 700 !important;
+}
+
+.footer-links ul li a,
+.footer-contact p,
+.footer-contact span {
+    color: #000000 !important;
+    font-weight: 500 !important;
+}
+
+/* Get Started Button */
+.hero .btn-get-started {
+    background-color: #004d40 !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    border: 2px solid #004d40 !important;
+    padding: 12px 30px !important;
+    font-size: 16px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.hero .btn-get-started:hover {
+    background-color: #000000 !important;
+    border-color: #000000 !important;
+}
+
+/* Navigation Links */
+.navmenu > ul > li > a {
+    color: #000000 !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+}
+
+.navmenu > ul > li > a:hover,
+.navmenu > ul > li > a.active {
+    background-color: #004d40 !important;
+    color: #ffffff !important;
+}
+
+/* State Data Center Title */
+.footer .sitename {
+    color: #000000 !important;
+    font-weight: 700 !important;
+    font-size: 24px !important;
+}
+
+/* Contact Section */
+.contact h2,
+.contact h3,
+.contact p,
+.contact strong {
+    color: #000000 !important;
+}
+
+.info-item h3 {
+    color: #000000 !important;
+    font-weight: 700 !important;
+}
+
+.info-item p,
+.info-item span {
+    color: #000000 !important;
+    font-weight: 500 !important;
+}
+
+/* Section Titles */
+.section-title h2 {
+    color: #000000 !important;
+    font-weight: 800 !important;
+}
+
+.section-title p {
+    color: #000000 !important;
+    font-weight: 500 !important;
+}
+
+/* Copyright Section */
+.copyright p,
+.copyright span,
+.copyright strong {
+    color: #000000 !important;
+}
+
+/* Ensure high contrast for all important text */
+.footer a,
+.footer p,
+.footer span,
+.footer strong,
+.footer h4 {
+    color: #000000 !important;
+    text-shadow: none !important;
+}

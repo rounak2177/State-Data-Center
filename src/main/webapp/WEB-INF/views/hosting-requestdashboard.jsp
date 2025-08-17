@@ -19,14 +19,10 @@
                         <th>Application</th>
                         <th>Domain</th>
                         <th>VM Count</th>
-                        <th>CPU (Cores)</th>
-                        <th>RAM(in GB)</th>
-                        <th>Disk(in GB)</th>
-                        <th>OS</th>
-                        <th>Database</th>
-                        <th>VM Type</th>
+                        <th>VM Details</th>
                         <th>User Email</th>
                         <th>Current Status</th>
+                        <th>Fee Status</th>
                         <th>Approval Status</th>
                     </tr>
                 </thead>
@@ -37,12 +33,32 @@
                             <td>${hosting_requests.applicationName}</td>
                             <td>${hosting_requests.domainName}</td>
                             <td>${hosting_requests.vmCount}</td>
-                            <td>${hosting_requests.cpu}</td>
-                            <td>${hosting_requests.ram}</td>
-                            <td>${hosting_requests.disk}</td>
-                            <td>${hosting_requests.os}</td>
-                            <td>${hosting_requests.database}</td>
-                            <td>${hosting_requests.vmType}</td>
+                            <td>
+                                <table class="table table-sm table-bordered mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>CPU</th>
+                                            <th>RAM</th>
+                                            <th>Disk</th>
+                                            <th>OS</th>
+                                            <th>Database</th>
+                                            <th>Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="vm" items="${hosting_requests.vmList}">
+                                            <tr>
+                                                <td>${vm.cpu}</td>
+                                                <td>${vm.ram}</td>
+                                                <td>${vm.disk}</td>
+                                                <td>${vm.os}</td>
+                                                <td>${vm.database}</td>
+                                                <td>${vm.vmType}</td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </td>
                             <td>${hosting_requests.userEmail}</td>
                             <td>
                                 <span class="badge 
@@ -56,6 +72,14 @@
                                         <c:otherwise>${hosting_requests.status}</c:otherwise>
                                     </c:choose>
                                 </span>
+                            </td>
+                            <td>
+                                <div>
+                                    <div>₹${hosting_requests.totalFee}</div>
+                                    <span class="badge ${hosting_requests.feePaid eq 'Paid' ? 'bg-success' : 'bg-warning'}">
+                                        ${hosting_requests.feePaid}
+                                    </span>
+                                </div>
                             </td>
                             <td>
                                 <select name="hostingStatus[${hosting_requests.id}]" class="form-select">

@@ -27,6 +27,10 @@
 
   <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
+  
+  <!-- Custom CSS Files -->
+  <link href="assets/css/custom.css" rel="stylesheet">
+  <link href="assets/css/index-specific.css" rel="stylesheet">
 
   <!-- =======================================================
   * Template Name: Impact
@@ -66,7 +70,6 @@
           <!-- Uncomment the line below if you also wish to use an image logo -->
           <!-- <img src="assets/img/logo.png" alt=""> -->
           <h1 class="sitename">Data Center Management</h1>
-          <span>System</span>
         </a>
 
         <nav id="navmenu" class="navmenu">
@@ -78,7 +81,6 @@
             <li><a href="/register">Register</a></li>
             <li><a href="#contact">Contact</a></li>
             <li><a href="/admin-login">Admin</a></li>
-            <li><a href="/pay-fee">Pay</a></li>
           </ul>
           <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
@@ -92,52 +94,63 @@
 <!-- Hero Section -->
 <section id="hero" class="hero section accent-background">
 
-  <div class="container position-relative" data-aos="fade-up" data-aos-delay="100">
-    <div class="row gy-5 justify-content-between">
-      <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center">
-        <h2><span>Welcome to </span><span class="accent">Data Center Management System</span></h2>
+  <div class="container position-relative">
+    <div class="row">
+      <div class="col-lg-7">
+        <h1>Welcome to Data Center Management System</h1>
         <p>Empowering secure, scalable, and efficient digital infrastructure for government and enterprise services.</p>
         <div class="d-flex">
           <a href="#about" class="btn-get-started">Get Started</a>
         </div>
       </div>
-      <div class="col-lg-5 order-1 order-lg-2">
+      <div class="col-lg-5">
         <img src="assets/img/hero-img.svg" class="img-fluid" alt="">
       </div>
     </div>
   </div>
 
-  <div class="icon-boxes position-relative" data-aos="fade-up" data-aos-delay="200">
+  <div class="icon-boxes position-relative">
     <div class="container position-relative">
-      <div class="row gy-4 mt-5">
+      <div class="row gy-4">
+        <div class="col-xl-3 col-md-6">
+          <div class="card feature-card">
+            <div class="card-body">
+              <i class="bi bi-easel"></i>
+              <h4>Centralized</h4>
+              <p>Resource Monitoring</p>
+            </div>
+          </div>
+        </div>
 
         <div class="col-xl-3 col-md-6">
-          <div class="icon-box">
-            <div class="icon"><i class="bi bi-easel"></i></div>
-            <h4 class="title"><a href="#" class="stretched-link">Centralized Resource Monitoring</a></h4>
+          <div class="card feature-card">
+            <div class="card-body">
+              <i class="bi bi-gem"></i>
+              <h4>High Availability</h4>
+              <p>Infrastructure</p>
+            </div>
           </div>
-        </div><!--End Icon Box -->
+        </div>
 
         <div class="col-xl-3 col-md-6">
-          <div class="icon-box">
-            <div class="icon"><i class="bi bi-gem"></i></div>
-            <h4 class="title"><a href="#" class="stretched-link">High Availability Infrastructure</a></h4>
+          <div class="card feature-card">
+            <div class="card-body">
+              <i class="bi bi-geo-alt"></i>
+              <h4>Geo-Redundant</h4>
+              <p>Backup</p>
+            </div>
           </div>
-        </div><!--End Icon Box -->
+        </div>
 
         <div class="col-xl-3 col-md-6">
-          <div class="icon-box">
-            <div class="icon"><i class="bi bi-geo-alt"></i></div>
-            <h4 class="title"><a href="#" class="stretched-link">Geo-Redundant Backup</a></h4>
+          <div class="card feature-card">
+            <div class="card-body">
+              <i class="bi bi-command"></i>
+              <h4>Robust Security</h4>
+              <p>Architecture</p>
+            </div>
           </div>
-        </div><!--End Icon Box -->
-
-        <div class="col-xl-3 col-md-6">
-          <div class="icon-box">
-            <div class="icon"><i class="bi bi-command"></i></div>
-            <h4 class="title"><a href="#" class="stretched-link">Robust Security Architecture</a></h4>
-          </div>
-        </div><!--End Icon Box -->
+        </div>
 
       </div>
     </div>

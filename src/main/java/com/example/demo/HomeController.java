@@ -3,23 +3,20 @@ package com.example.demo;
 import com.example.demo.repository.HostingRequestRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.AdminRepository;
-import com.example.demo.User;
-import com.example.demo.Admin;
-import com.example.demo.HostingRequest;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Optional;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 import org.springframework.util.StringUtils;
 import java.nio.file.*;
@@ -37,17 +34,14 @@ import org.springframework.data.domain.Pageable;
 @Controller
 public class HomeController {
 
-	User user = new User(); // ← directly used
-	Admin admin = new Admin(); // ← directly used
-	HostingRequest req = new HostingRequest(); // ← directly used
-
     @Autowired
     private AdminRepository adminRepository;
 
     @Autowired
     private UserRepository userRepository;
     
-    private final String uploadDir = "uploads";
+    @Value("${file.upload-dir}")
+    private String uploadDir;
     // ---------- Landing ----------
     @GetMapping("/")
     public String indexPage() {
@@ -71,30 +65,44 @@ public class HomeController {
                             Model model,
                             HttpSession session) {
 
-        // Dummy CAPTCHA validation
-        if (!"1234".equals(captcha)) {
-            model.addAttribute("error", "Invalid CAPTCHA.");
+        try {
+            // 1. Validate input
+            if (email == null || email.trim().isEmpty()) {
+                model.addAttribute("error", "Email is required.");
+                return "login";
+            }
+
+            // 2. Dummy CAPTCHA validation
+            if (!"1234".equals(captcha)) {
+                model.addAttribute("error", "Invalid CAPTCHA code.");
+                return "login";
+            }
+
+            // 3. Find user and handle case sensitivity
+            User user = userRepository.findByEmail(email.toLowerCase().trim());
+
+            if (user == null) {
+                model.addAttribute("error", "No account found with this email address.");
+                return "login";
+            }
+
+            // 4. Check user status
+            if (!"APPROVED".equalsIgnoreCase(user.getStatus())) {
+                model.addAttribute("error", "Your account is pending approval. Please contact the administrator.");
+                return "login";
+            }
+
+            // 5. Store user in session
+            session.setAttribute("loggedInUser", user);
+            
+            // 6. Redirect to dashboard
+            return "redirect:/user-dashboard";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "An error occurred during login. Please try again.");
             return "login";
         }
-
-        User user = userRepository.findByEmail(email);
-
-        if (user == null) {
-            model.addAttribute("error", "User not found.");
-            return "login";
-        }
-
-        // Check if user is approved
-        if (!"APPROVED".equalsIgnoreCase(user.getStatus())) {
-            model.addAttribute("error", "Your account is not approved yet.");
-            return "login";
-        }
-
-        // Store user in session
-        session.setAttribute("loggedInUser", user);
-
-        // Redirect to user dashboard only
-        return "redirect:/user-dashboard";
     }
 
 
@@ -138,12 +146,13 @@ public class HomeController {
                 return "redirect:/register";
             }
 
-            String originalFileName = StringUtils.cleanPath(authorityLetter.getOriginalFilename());
-            if (originalFileName == null || originalFileName.isEmpty()) {
+            String originalFileName = authorityLetter.getOriginalFilename();
+            if (originalFileName == null || originalFileName.trim().isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "No file selected.");
                 return "redirect:/register";
             }
-
+            
+            originalFileName = StringUtils.cleanPath(originalFileName);
             if (!originalFileName.toLowerCase().endsWith(".pdf")) {
                 redirectAttributes.addFlashAttribute("error", "Only PDF files are allowed.");
                 return "redirect:/register";
@@ -268,11 +277,12 @@ public class HomeController {
             Model model) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<HostingRequest> hostingRequestPage = hostingRequestRepository.findAll(pageable);
+        Page<HostingRequest> hostingRequestPage = hostingRequestRepository.findAllWithVMDetails(pageable);
 
         model.addAttribute("hostingRequests", hostingRequestPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", hostingRequestPage.getTotalPages());
+        model.addAttribute("pageSize", size);
 
         return "hosting-requestdashboard";
     }
@@ -325,6 +335,9 @@ public class HomeController {
             return "redirect:/login";
         }
 
+        // Get user's hosting requests with VM details eagerly loaded
+        List<HostingRequest> userRequests = hostingRequestRepository.findByUserEmailWithVMDetails(user.getEmail());
+        model.addAttribute("userRequests", userRequests);
         model.addAttribute("user", user);
         return "user-dashboard";
     }
@@ -334,44 +347,77 @@ public class HomeController {
 
     // GET form
     @PostMapping("/hosting-request")
-    public String submitHostingForm(@ModelAttribute HostingRequest hostingRequest,
-                                     HttpSession session,
-                                     RedirectAttributes redirectAttributes) {
-        User user = (User) session.getAttribute("loggedInUser");
+    public String submitHostingForm(@RequestParam String applicationName,
+                                  @RequestParam String domainName,
+                                  @RequestParam int vmCount,
+                                  @RequestParam(required = false) List<String> cpu,
+                                  @RequestParam(required = false) List<String> ram,
+                                  @RequestParam(required = false) List<String> disk,
+                                  @RequestParam(required = false) List<String> os,
+                                  @RequestParam(required = false) List<String> database,
+                                  @RequestParam(required = false) List<String> vmType,
+                                  HttpSession session,
+                                  RedirectAttributes redirectAttributes) {
+        try {
+            User user = (User) session.getAttribute("loggedInUser");
 
-        // 1. Ensure user is logged in
-        if (user == null) {
-            return "redirect:/login";
-        }
+            // 1. Ensure user is logged in
+            if (user == null) {
+                return "redirect:/login";
+            }
 
-        // 2. Ensure user is approved before making hosting requests
-        if (!"APPROVED".equalsIgnoreCase(user.getStatus())) {
+            // 2. Ensure user is approved
+            if (!"APPROVED".equalsIgnoreCase(user.getStatus())) {
+                redirectAttributes.addFlashAttribute("error",
+                        "Your account is not approved to make hosting requests.");
+                return "redirect:/user-dashboard";
+            }
+
+            // 3. Create hosting request
+            HostingRequest hostingRequest = new HostingRequest();
+            hostingRequest.setApplicationName(applicationName);
+            hostingRequest.setDomainName(domainName);
+            hostingRequest.setVmCount(vmCount);
+            hostingRequest.setUserEmail(user.getEmail());
+            hostingRequest.setStatus("PENDING");
+            hostingRequest.setFeePaid("Unpaid");
+
+            // 4. Create VM details
+            List<VMDetail> vmList = new ArrayList<>();
+            for (int i = 0; i < vmCount; i++) {
+                if (cpu != null && i < cpu.size()) {
+                    VMDetail vm = new VMDetail();
+                    vm.setCpu(cpu.get(i));
+                    vm.setRam(ram.get(i));
+                    vm.setDisk(disk.get(i));
+                    vm.setOs(os.get(i));
+                    vm.setDatabase(database.get(i));
+                    vm.setVmType(vmType.get(i));
+                    vm.setHostingRequest(hostingRequest);
+                    vmList.add(vm);
+                }
+            }
+            hostingRequest.setVmList(vmList);
+
+            // 5. Calculate and set total fee
+            hostingRequest.setTotalFee(hostingRequest.calculateHostingFee());
+
+            // 6. Save hosting request
+            hostingRequestRepository.save(hostingRequest);
+
+            // 7. Add success message
+            redirectAttributes.addFlashAttribute("msg",
+                    "Hosting request submitted successfully! Total fee: " +
+                    hostingRequest.getTotalFee() + " (Unpaid)");
+
+            return "redirect:/user-dashboard";
+        } catch (Exception e) {
+            e.printStackTrace();
             redirectAttributes.addFlashAttribute("error",
-                    "Your account is not approved to make hosting requests.");
+                    "Failed to submit hosting request. Please try again.");
             return "redirect:/user-dashboard";
         }
-
-        // 3. Attach logged-in user's email to the hosting request
-        hostingRequest.setUserEmail(user.getEmail());
-
-        // 4. Explicitly set default status and payment status
-        hostingRequest.setStatus("PENDING"); 
-        hostingRequest.setFeePaid("Unpaid"); // ✅ String value
-
-        // 5. Calculate and store total fee in DB
-        hostingRequest.setTotalFee(hostingRequest.calculateHostingFee());
-
-        // 6. Save hosting request
-        hostingRequestRepository.save(hostingRequest);
-
-        // 7. Add success message
-        redirectAttributes.addFlashAttribute("msg",
-                "Hosting request submitted successfully! Total fee: " +
-                hostingRequest.getTotalFee() + " (Unpaid)");
-
-        return "redirect:/user-dashboard";
     }
-
     @PostConstruct
     public void updateOldRequests() {
         List<HostingRequest> requests = hostingRequestRepository.findAll();
@@ -428,12 +474,15 @@ public class HomeController {
                                 RedirectAttributes redirectAttributes,
                                 Model model) {
 
-        HostingRequest request = hostingRequestRepository.findByUserEmail(email);
+        List<HostingRequest> requests = hostingRequestRepository.findByUserEmail(email);
 
-        if (request == null) {
+        if (requests.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "No hosting request found for this email.");
             return "redirect:/pay-fee";
         }
+
+        // Get the most recent request
+        HostingRequest request = requests.get(requests.size() - 1);
 
         if (!"APPROVED".equalsIgnoreCase(request.getStatus())) {
             redirectAttributes.addFlashAttribute("error", "Your hosting request has not been approved yet.");
